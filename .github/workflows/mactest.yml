@@ -7,5 +7,5 @@ jobs:
   build:
     runs-on: macos-latest-large
     steps:
-    - name: Hello World
+    - name: Hello World blabla
       run: echo "Hello world" && sleep 20

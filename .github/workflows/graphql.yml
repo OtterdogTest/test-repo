@@ -3,6 +3,8 @@ name: Graphql query test
 on:
   workflow_dispatch:
 
+permissions: read-all
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,6 +19,7 @@ jobs:
                   allowsDeletions
                   allowsForcePushes
                   dismissesStaleReviews
+                  isAdminEnforced
                   pattern
                   matchingRefs(first: 100) {
                     nodes {

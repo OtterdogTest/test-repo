@@ -14,19 +14,9 @@ jobs:
         script='query {
           repository(owner:\"adoptium\", name:\"temurin-build\") {
             branchProtectionRules(first: 100) {
-              edges {
-                node {
-                  allowsDeletions
-                  allowsForcePushes
-                  dismissesStaleReviews
-                  isAdminEnforced
-                  pattern
-                  matchingRefs(first: 100) {
-                    nodes {
-                      name
-                    }
-                  }
-                }
+              nodes {
+                id
+                pattern
               }
             }
             refs(first: 100, refPrefix: \"refs/heads/\") {

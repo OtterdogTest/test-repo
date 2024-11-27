@@ -1,0 +1,98 @@
+name: Graphql query test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Graphql query
+      run: |
+        script='query {
+          repository(owner:\"adoptium\", name:\"temurin-build\") {
+            branchProtectionRules(first: 100) {
+              edges {
+                node {
+                  allowsDeletions
+                  allowsForcePushes
+                  dismissesStaleReviews
+                  isAdminEnforced
+                  pattern
+                  matchingRefs(first: 100) {
+                    nodes {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+            refs(first: 100, refPrefix: \"refs/heads/\") {
+              nodes {
+                name
+                refUpdateRule {
+                  requiredApprovingReviewCount
+                  allowsForcePushes
+                }
+              }
+            }
+            rulesets(first: 100) {
+              edges {
+                node {
+                  name
+                  enforcement
+                  target
+                  conditions {
+                    refName {
+                      exclude
+                      include
+                    }
+                  }
+                  bypassActors(first: 100) {
+                    nodes {
+                      actor {
+                        __typename
+                        ... on App {
+                          name
+                          databaseId
+                        }
+                      }
+                      bypassMode
+                      organizationAdmin
+                      repositoryRoleName
+                    }
+                  }
+                  rules(first: 100) {
+                    nodes {
+                      type
+                      parameters {
+                        ... on PullRequestParameters {
+                          dismissStaleReviewsOnPush
+                          requireCodeOwnerReview
+                          requireLastPushApproval
+                          requiredApprovingReviewCount
+                          requiredReviewThreadResolution
+                        }
+                        ... on RequiredStatusChecksParameters {
+                          requiredStatusChecks {
+                            context
+                            integrationId
+                          }
+                          strictRequiredStatusChecksPolicy
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }  
+        }'
+        
+        script="$(echo $script)"   # the query should be a one-liner, without newlines
+        
+        echo $script
+        
+        curl -i -H 'Content-Type: application/json' \
+           -H "Authorization: bearer {{ secrets.GITHUB_TOKEN }}" \
+           -X POST -d "{ \"query\": \"$script\"}" https://api.github.com/graphql
